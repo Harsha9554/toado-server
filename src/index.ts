@@ -1,9 +1,13 @@
+import "reflect-metadata";
 import express, { Application, Response } from "express";
+import { createConnection, getConnectionOptions } from "typeorm";
 import cors from "cors";
 
 const main = async () => {
 	const app: Application = express();
-	const PORT: number = 3000;
+	const port = process.env.PORT || 3000;
+
+	await createConnection(await getConnectionOptions());
 
 	app.use(cors());
 	app.use(express.json());
@@ -13,13 +17,11 @@ const main = async () => {
 		return res.status(200).send({ message: "TOAD-O" });
 	});
 
-	try {
-		app.listen(PORT, (): void => {
-			console.log(`TOAD-O Server running on the port ${PORT}.`);
-		});
-	} catch (error) {
-		console.error(`Error : ${error}`);
-	}
+	app.listen(port, (): void => {
+		console.log(`TOAD-O Server running on ${port}.`);
+	});
 };
 
-main();
+main().catch((error) => {
+	console.error(error);
+});
